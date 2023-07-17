@@ -20,6 +20,10 @@ func NewWindow[T any]() *Window[T] {
 	}
 }
 
+func (window *Window[T]) List() []T {
+	return window.data.List()
+}
+
 func (window *Window[T]) PeekStart() (T, error) {
 	value, err := window.data.PeekFront()
 	if err == atom.ErrRingEmpty {

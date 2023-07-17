@@ -40,6 +40,18 @@ func (ring *Ring[T]) Size() int {
 	return ring.size
 }
 
+func (ring *Ring[T]) List() []T {
+	ring.mu.RLock()
+	defer ring.mu.RUnlock()
+
+	slice := make([]T, ring.size)
+	for i := 0; i < ring.size; i++ {
+		slice[i] = ring.data[(ring.head+i)%len(ring.data)]
+	}
+
+	return slice
+}
+
 func (ring *Ring[T]) PeekFront() (T, error) {
 	ring.mu.RLock()
 	defer ring.mu.RUnlock()

@@ -26,6 +26,19 @@ func TestSizeRing(t *testing.T) {
 	test.Equal(t, ring.Size(), 0)
 }
 
+func TestListRing(t *testing.T) {
+	ring := NewRing[int]()
+
+	ring.PushFront(2)
+	ring.PushBack(3)
+	ring.PushBack(4)
+	ring.PushFront(1)
+	list := ring.List()
+	for i := 0; i < 4; i++ {
+		test.Equal(t, list[i], i+1)
+	}
+}
+
 func TestPeekFrontRing(t *testing.T) {
 	ring := NewRing[int]()
 
