@@ -1,6 +1,14 @@
 package molecule
 
-import "github.com/adamavixio/structures/pkg/atom"
+import (
+	"errors"
+
+	"github.com/adamavixio/structures/pkg/atom"
+)
+
+var (
+	ErrWindowEmpty = errors.New("queue is empty")
+)
 
 type Window[T any] struct {
 	data *atom.Ring[T]
@@ -10,6 +18,15 @@ func NewWindow[T any]() *Window[T] {
 	return &Window[T]{
 		data: atom.NewRing[T](),
 	}
+}
+
+func (window *Window[T]) PeekStart() (T, error) {
+	value, err := window.data.PeekFront()
+	if err == atom.ErrRingEmpty {
+		return value, ErrWindowEmpty
+	}
+
+	return value, nil
 }
 
 func (window *Window[T]) InsertStart(value T) {
@@ -33,6 +50,15 @@ func (window *Window[T]) FilterStart(filter func(T) bool) ([]T, error) {
 		values = append(values, value)
 	}
 	return values, nil
+}
+
+func (window *Window[T]) PeekEnd() (T, error) {
+	value, err := window.data.PeekBack()
+	if err == atom.ErrRingEmpty {
+		return value, ErrWindowEmpty
+	}
+
+	return value, nil
 }
 
 func (window *Window[T]) InsertEnd(value T) {

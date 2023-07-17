@@ -31,8 +31,7 @@ func (queue *Queue[T]) Size() int {
 func (queue *Queue[T]) Peek() (T, error) {
 	value, err := queue.data.PeekFront()
 	if err == atom.ErrRingEmpty {
-		var empty T
-		return empty, ErrQueueEmpty
+		return value, ErrQueueEmpty
 	}
 
 	return value, nil
