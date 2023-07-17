@@ -7,11 +7,14 @@ type Window[T any] struct {
 	data   *atom.Ring[T]
 }
 
-func NewWindow[T any](filter func(T) bool) *Window[T] {
+func NewWindow[T any]() *Window[T] {
 	return &Window[T]{
-		filter: filter,
-		data:   atom.NewRing[T](),
+		data: atom.NewRing[T](),
 	}
+}
+
+func (window *Window[T]) Filter(filter func(T) bool) {
+	window.filter = filter
 }
 
 func (window *Window[T]) Insert(value T) ([]T, []T, error) {
