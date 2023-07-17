@@ -3,8 +3,7 @@ package molecule
 import "github.com/adamavixio/structures/pkg/atom"
 
 type Window[T any] struct {
-	filter func(T) bool
-	data   *atom.Ring[T]
+	data *atom.Ring[T]
 }
 
 func NewWindow[T any]() *Window[T] {
@@ -13,34 +12,48 @@ func NewWindow[T any]() *Window[T] {
 	}
 }
 
-func (window *Window[T]) Filter(filter func(T) bool) {
-	window.filter = filter
+func (window *Window[T]) InsertStart(value T) {
+	window.data.PushFront(value)
 }
 
-func (window *Window[T]) Insert(value T) ([]T, []T, error) {
-	front := []T{}
-	for value, err := window.data.PeekFront(); window.filter(value); {
+func (window *Window[T]) FilterStart(filter func(T) bool) ([]T, error) {
+	values := []T{}
+	for {
+		value, err := window.data.PeekFront()
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
-		value, err := window.data.PopFront()
+		if !filter(value) {
+			break
+		}
+		_, err = window.data.PopFront()
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
-		front = append(front, value)
+		values = append(values, value)
 	}
+	return values, nil
+}
 
-	back := []T{}
-	for value, err := window.data.PeekBack(); window.filter(value); {
+func (window *Window[T]) InsertEnd(value T) {
+	window.data.PushBack(value)
+}
+
+func (window *Window[T]) FilterEnd(filter func(T) bool) ([]T, error) {
+	values := []T{}
+	for {
+		value, err := window.data.PeekBack()
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
-		value, err := window.data.PopBack()
+		if !filter(value) {
+			break
+		}
+		_, err = window.data.PopBack()
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
-		front = append(back, value)
+		values = append([]T{value}, values...)
 	}
-
-	return front, back, nil
+	return values, nil
 }
