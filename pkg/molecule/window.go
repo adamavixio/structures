@@ -14,18 +14,30 @@ func NewWindow[T any](filter func(T) bool) *Window[T] {
 	}
 }
 
-func (window *Window[T]) Insert(value T) error {
+func (window *Window[T]) Insert(value T) ([]T, []T, error) {
+	front := []T{}
 	for value, err := window.data.PeekFront(); window.filter(value); {
 		if err != nil {
-			return err
+			return nil, nil, err
 		}
-		window.data.PopFront()
+		value, err := window.data.PopFront()
+		if err != nil {
+			return nil, nil, err
+		}
+		front = append(front, value)
 	}
+
+	back := []T{}
 	for value, err := window.data.PeekBack(); window.filter(value); {
 		if err != nil {
-			return err
+			return nil, nil, err
 		}
-		window.data.PopBack()
+		value, err := window.data.PopBack()
+		if err != nil {
+			return nil, nil, err
+		}
+		front = append(back, value)
 	}
-	return nil
+
+	return front, back, nil
 }
